@@ -23,7 +23,7 @@ class MicropostsController extends Controller
             ];
             
         }
-            return view('welcome');
+            return view('welcome', $data);
     }
     
     public function store(Request $request)
