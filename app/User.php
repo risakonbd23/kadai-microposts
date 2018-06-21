@@ -9,20 +9,12 @@ class User extends Authenticatable
 {
     use Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
+
     protected $fillable = [
         'name', 'email', 'password',
     ];
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
+
     protected $hidden = [
         'password', 'remember_token',
     ];
@@ -39,21 +31,21 @@ class User extends Authenticatable
 
     public function followers()
     {
-        return $this->belongsToMany(User::class, 'user_follow', 'follow_id', 'user_id')->withTimestamps();
+        return $this->belongsToMany(User::class, 'user_follow', 'user_id', 'follow_id')->withTimestamps();
     }
     
     public function follow($userId)
     {
-    // confirm if already following
-    $exist = $this->is_following($userId);
-    // confirming that it is not you
-    $its_me = $this->id == $userId;
+    
+        $exist = $this->is_following($userId);
+
+        $its_me = $this->id == $userId;
 
         if ($exist || $its_me) {
-        // do nothing if already following
+
         return false;
         } else {
-        // follow if not following
+        
         $this->followings()->attach($userId);
         return true;
         }
@@ -61,22 +53,59 @@ class User extends Authenticatable
 
     public function unfollow($userId)
     {
-    // confirming if already following
-    $exist = $this->is_following($userId);
-    // confirming that it is not you
-    $its_me = $this->id == $userId;
+        $exist = $this->is_following($userId);
+        $its_me = $this->id == $userId;
 
         if ($exist && !$its_me) {
-        // stop following if following
+
         $this->followings()->detach($userId);
         return true;
         } else {
-        // do nothing if not following
+
         return false;
         }
     }
 
-    public function is_following($userId) {
+    public function is_following($userId) 
+    {
         return $this->followings()->where('follow_id', $userId)->exists();
     }
+    
+    //以下favorite
+    public function favorite()
+    {
+        return $this->belongsToMany(Micropost::class, 'favorite', 'user_id', 'favorite_id')->withTimestamps();
+    }
+    
+    public function fav($micropostId)
+    {    
+        $exist = $this->is_favoriting($micropostId);
+    
+        if ($exist) {
+        return false;
+        } else {
+        
+        $this->favorite()->attach($micropostId);
+        return true;
+        }
+    }
+    
+    public function unfav($micropostId)
+    {
+        $exist = $this->is_favoriting($micropostId);
+        
+        if ($exist) {
+        $this->favorite()->detach($micropostId);
+        return true;
+        
+        } else {
+        return false;
+    }
+    }
+            
+    public function is_favoriting($micropostId) 
+    {
+       return $this->favorite()->where('favorite_id', $micropostId)->exists();
+    }         
+            
 }

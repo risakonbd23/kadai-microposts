@@ -26,11 +26,21 @@ Route::group(['middleware' => ['auth']], function () {
 
 Route::group(['middleware' => 'auth'], function () {
     Route::resource('users', 'UsersController', ['only' => ['index', 'show']]);
+   
+   //ログインできていた場合、URLの末尾がusers/{id}の時に実行できる
     Route::group(['prefix' => 'users/{id}'], function () {
+       
+       //follow,unfollw
         Route::post('follow', 'UserFollowController@store')->name('user.follow');
         Route::delete('unfollow', 'UserFollowController@destroy')->name('user.unfollow');
         Route::get('followings', 'UsersController@followings')->name('users.followings');
+        
         Route::get('followers', 'UsersController@followers')->name('users.followers');
+        
+        //favorite
+        Route::post('favorite', 'UserFavoriteController@store')->name('user.favorite');
+        Route::delete('unfavorite', 'UserFavoriteController@destroy')->name('user.unfavorite');
+        Route::get('favorites', 'UsersController@favorites')->name('users.favorites');
     });
 
     Route::resource('microposts', 'MicropostsController', ['only' => ['store', 'destroy']]);
