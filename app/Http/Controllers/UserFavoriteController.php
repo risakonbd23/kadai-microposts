@@ -8,13 +8,15 @@ class UserFavoriteController extends Controller
 {
     public function store(Request $request, $id)
     {
-        \Auth::user()->favorite($id);
+        \Auth::user()->fav($id);
         return redirect()->back();
     }
 
     public function destroy($id)
     {
-        \Auth::user()->unfavorite($id);
+        \Auth::user()->unfav($id);
         return redirect()->back();
     }
+    
+    
 }
